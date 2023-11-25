@@ -72,35 +72,153 @@ void addi(struct node *num1,struct node *num2, struct node **num3)
     }
     insert(num3,carry);
     reverse(num3);
+    reverse(num1);
+    reverse(num2);
+    return;
+}
+
+int countdigi(struct node *num)
+{
+    struct node *temp=num;
+    int count=0;
+    while(temp!=NULL)
+    {
+        count++;
+        temp=temp->next;
+    }
+    return count;
+}
+
+void subt(struct node *num1,struct node *num2, struct node **num3)
+{
+    if(countdigi(num1)>countdigi(num2))
+    {
+        reverse(&num1);
+        reverse(&num2);
+        struct node *temp1=num1;
+        struct node *temp2=num2;
+        int borrow=0,diff=0;
+        while(temp1!=NULL && temp2!=NULL)
+        {
+            diff=temp1->data-temp2->data;
+            if(diff<0)
+            {
+                diff=temp1->data+borrow*10-temp2->data;
+                insert(&num3,diff);
+                if(borrow)
+                {
+                    temp1->data+=1;
+                    borrow=0;
+                }
+                borrow=1;
+                temp1->next->data-=borrow;
+            }
+            else
+            {
+                insert(&num3,diff);
+                borrow=0;
+            }
+            temp1=temp1->next;
+            temp2=temp2->next;
+        }
+        while(temp1!=NULL)
+        {
+            insert(&num3,temp1->data);
+            temp1=temp1->next;
+        }
+        reverse(&num1);
+        reverse(&num2);
+        reverse(&num3);
+        return;
+    }
+    else if(countdigi(num1)==countdigi(num2))
+    {
+        struct node *temp1=num1;
+        struct node *temp2=num2;
+        while(temp1!=NULL && temp2!=NULL)
+        {
+            if(temp1->data>temp2->data)
+            {
+                reverse(&num1);
+                reverse(&num2);
+                temp1=num1;
+                temp2=num2;
+                int borrow=0,diff=0;
+                while(temp1!=NULL && temp2!=NULL)
+                {
+                    diff=temp1->data-temp2->data;
+                    if(diff<0)
+                    {
+                        diff=temp1->data+borrow*10-temp2->data;
+                        insert(&num3,diff);
+                        if(borrow)
+                        {
+                            temp1->data+=1;
+                            borrow=0;
+                        }
+                        borrow=1;
+                        temp1->next->data-=1;
+                    }
+                    else
+                    {
+                        insert(&num3,diff);
+                        borrow=0;
+                    }
+                    temp1=temp1->next;
+                    temp2=temp2->next;
+                }
+                reverse(&num1);
+                reverse(&num2);
+                reverse(&num3);
+                return;
+            }
+            else
+            {
+                temp1=temp1->next;
+                temp2=temp2->next;
+            }
+        }
+    }
+    reverse(&num1);
+    reverse(&num2);
+    struct node *temp1=num2;
+    struct node *temp2=num1;
+    int borrow=0,diff=0;
+    while(temp1!=NULL && temp2!=NULL)
+    {
+        diff=temp1->data-temp2->data;
+        if(diff<0)
+        {
+            diff=temp1->data+10-temp2->data;
+            insert(&num3,diff);
+            if(borrow)
+            temp1->data+=borrow;
+            borrow=1;
+            temp1->next->data-=1;
+        }
+        else
+        {
+            if(borrow)
+            temp1->data+=borrow;
+            insert(&num3,diff);
+            borrow=0;
+        }
+        temp1=temp1->next;
+        temp2=temp2->next;
+    }
+    while(temp1!=NULL)
+    {
+        insert(&num3,temp1->data);
+        temp1=temp1->next;
+    }
+    insert(&num3,-1);
+    reverse(&num1);
+    reverse(&num2);
+    reverse(&num3);
     return;
 }
 
 // incomplete code
-// void subt(struct node *num1,struct node *num2, struct node **num3)
-// {
-//     reverse(&num1);
-//     reverse(&num2);
-//     int carry=0,diff=0;
-//     while(num1->next!=NULL && num2!=NULL)
-//     {
-//         diff=num1->data-carry-num2->data;
-//         if(diff<0)
-//         {
-//             diff+=10;
-//             carry++;
-//             insert(&num3,diff);
-//         }
-//         else
-//         {
-//             insert(&num3,diff);
-//             carry=0;
-//         }
-//         num1=num1->next;
-//         num2=num2->next;
-//     }
-//     return;
-// }
-
 // void multi(struct node *num1,struct node *num2, struct node **num3)
 // {
 //     return;
@@ -133,7 +251,7 @@ int main()
     struct node *num1=NULL;
     struct node *num2=NULL;
     struct node *add=NULL;
-    struct node *sub=NULL; // to be made
+    struct node *sub=NULL; // made but is not working 100%
     struct node *mult=NULL; // to be made
     struct node *divi=NULL; // to be made
     struct node *mod=NULL; // to be made
@@ -173,9 +291,9 @@ int main()
     addi(num1,num2,&add);
     printnum(add);
 
-    // printf("Subtraction: ");
-    // subt(num1,num2,&sub);
-    // printnum(sub);
+    printf("Subtraction: ");
+    subt(num1,num2,&sub);
+    printnum(sub);
 
     // printf("Multiplication: ");
     // multi(num1,num2,&mult);
