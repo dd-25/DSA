@@ -47,33 +47,36 @@ void addi(struct node *num1,struct node *num2, struct node **num3)
 {
     reverse(&num1);
     reverse(&num2);
+    struct node *temp1=num1;
+    struct node *temp2=num2;
     int sum=0,carry=0;
-    while(num1!=NULL && num2!=NULL)
+    while(temp1!=NULL && temp2!=NULL)
     {
-        sum=num1->data+num2->data+carry;
+        sum=temp1->data+temp2->data+carry;
         carry=sum/10;
         insert(num3,sum%10);
-        num1=num1->next;
-        num2=num2->next;
+        temp1=temp1->next;
+        temp2=temp2->next;
     }
-    while(num1!=NULL)
+    while(temp1!=NULL)
     {
-        sum=num1->data+carry;
+        sum=temp1->data+carry;
         carry=sum/10;
         insert(num3,sum%10);
-        num1=num1->next;
+        temp1=temp1->next;
     }
-    while(num2!=NULL)
+    while(temp2!=NULL)
     {
-        sum=num2->data+carry;
+        sum=temp2->data+carry;
         carry=sum/10;
         insert(num3,sum%10);
-        num2=num2->next;
+        temp2=temp2->next;
     }
+    if(carry!=0)
     insert(num3,carry);
     reverse(num3);
-    reverse(num1);
-    reverse(num2);
+    reverse(&num1);
+    reverse(&num2);
     return;
 }
 
@@ -98,24 +101,24 @@ void subt(struct node *num1,struct node *num2, struct node **num3)
         struct node *temp1=num1;
         struct node *temp2=num2;
         int borrow=0,diff=0;
-        while(temp1!=NULL && temp2!=NULL)
+        while(temp2!=NULL)
         {
             diff=temp1->data-temp2->data;
             if(diff<0)
             {
-                diff=temp1->data+borrow*10-temp2->data;
-                insert(&num3,diff);
+                diff=temp1->data+10-temp2->data;
+                insert(num3,diff);
                 if(borrow)
                 {
                     temp1->data+=1;
                     borrow=0;
                 }
                 borrow=1;
-                temp1->next->data-=borrow;
+                temp1->next->data-=1;
             }
             else
             {
-                insert(&num3,diff);
+                insert(num3,diff);
                 borrow=0;
             }
             temp1=temp1->next;
@@ -123,12 +126,17 @@ void subt(struct node *num1,struct node *num2, struct node **num3)
         }
         while(temp1!=NULL)
         {
-            insert(&num3,temp1->data);
+            insert(num3,temp1->data);
+            if(borrow)
+            {
+                temp1->data+=1;
+                borrow=0;
+            }
             temp1=temp1->next;
         }
         reverse(&num1);
         reverse(&num2);
-        reverse(&num3);
+        reverse(num3);
         return;
     }
     else if(countdigi(num1)==countdigi(num2))
@@ -149,8 +157,8 @@ void subt(struct node *num1,struct node *num2, struct node **num3)
                     diff=temp1->data-temp2->data;
                     if(diff<0)
                     {
-                        diff=temp1->data+borrow*10-temp2->data;
-                        insert(&num3,diff);
+                        diff=temp1->data+10-temp2->data;
+                        insert(num3,diff);
                         if(borrow)
                         {
                             temp1->data+=1;
@@ -161,7 +169,7 @@ void subt(struct node *num1,struct node *num2, struct node **num3)
                     }
                     else
                     {
-                        insert(&num3,diff);
+                        insert(num3,diff);
                         borrow=0;
                     }
                     temp1=temp1->next;
@@ -169,7 +177,7 @@ void subt(struct node *num1,struct node *num2, struct node **num3)
                 }
                 reverse(&num1);
                 reverse(&num2);
-                reverse(&num3);
+                reverse(num3);
                 return;
             }
             else
@@ -184,23 +192,24 @@ void subt(struct node *num1,struct node *num2, struct node **num3)
     struct node *temp1=num2;
     struct node *temp2=num1;
     int borrow=0,diff=0;
-    while(temp1!=NULL && temp2!=NULL)
+    while(temp2!=NULL)
     {
         diff=temp1->data-temp2->data;
         if(diff<0)
         {
             diff=temp1->data+10-temp2->data;
-            insert(&num3,diff);
+            insert(num3,diff);
             if(borrow)
-            temp1->data+=borrow;
+            {
+                temp1->data+=1;
+                borrow=0;
+            }
             borrow=1;
             temp1->next->data-=1;
         }
         else
         {
-            if(borrow)
-            temp1->data+=borrow;
-            insert(&num3,diff);
+            insert(num3,diff);
             borrow=0;
         }
         temp1=temp1->next;
@@ -208,13 +217,18 @@ void subt(struct node *num1,struct node *num2, struct node **num3)
     }
     while(temp1!=NULL)
     {
-        insert(&num3,temp1->data);
+        insert(num3,temp1->data);
+        if(borrow)
+        {
+            temp1->data+=1;
+            borrow=0;
+        }
         temp1=temp1->next;
     }
-    insert(&num3,-1);
+    insert(num3,-1);
     reverse(&num1);
     reverse(&num2);
-    reverse(&num3);
+    reverse(num3);
     return;
 }
 
